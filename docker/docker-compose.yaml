@@ -1,0 +1,13 @@
+name: jeeb-bot
+
+services:
+  app:
+    image: jeeb-bot:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8501:8501"
+    volumes:
+      - ${PWD}/config.yaml:/app/config/config.yaml
+      - ${PWD}/example-document.txt:/app/example-document.txt
