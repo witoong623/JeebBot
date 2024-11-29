@@ -4,7 +4,6 @@ import yaml
 class Config:
     openai_api_key: str | None
     openai_base_url: str | None
-    document_path: str
 
     def __init__(self, config_filepath: str):
         with open(config_filepath) as f:

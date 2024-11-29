@@ -15,7 +15,7 @@ def get_chatbot():
 
 chatbot = get_chatbot()
 
-st.title("Customer support")
+st.title("จีบบอท ❤️")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -36,8 +36,6 @@ if prompt := st.chat_input("What is up?"):
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        # st.markdown(response)
-        response = st.write_stream(map(lambda ret: ret['answer'],
-                                       filter(lambda ret: 'answer' in ret, chatbot.chat(prompt))))
+        response = st.write_stream(map(lambda ret: ret.content, chatbot.chat(prompt)))
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
