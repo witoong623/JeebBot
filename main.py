@@ -6,6 +6,9 @@ from config import Config
 from chatbot import Chatbot
 
 
+st.set_page_config(page_title="จีบบอท", page_icon="❤️")
+
+
 @st.cache_resource
 def get_chatbot():
     if len(sys.argv) < 2:
