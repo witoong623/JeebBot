@@ -6,7 +6,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 
 from config import Config
-import templates
+import templates as tp
 
 
 class Chatbot:
@@ -29,7 +29,7 @@ class Chatbot:
     def setup_chain(self):
         # This prompt include input, previous conversation history and input message.
         qa_prompt = ChatPromptTemplate.from_messages([
-            ("system", templates.DEFAULT_SYSTEM_PROMPT),
+            ("system", tp.DEFAULT_SYSTEM_PROMPT),
             MessagesPlaceholder(variable_name="messages"),
         ])
 
@@ -46,9 +46,13 @@ class Chatbot:
             self.store[session_id] = ChatMessageHistory()
         return self.store[session_id]
 
-    def chat(self, msg, characteristic=templates.DEFAULT_BOT_CHARACTERISTICS, session_id="123"):
+    def chat(self, msg, session_id="123",
+             name=tp.DEFAULT_BOT_NAME,
+             characteristic=tp.DEFAULT_BOT_CHARACTERISTICS,
+             ):
         return self.conversation_chain.stream(
             {"messages": [HumanMessage(content=msg)],
+             "name": name,
              "character": characteristic},
             config={"configurable": {"session_id": session_id}}
         )

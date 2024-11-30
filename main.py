@@ -41,8 +41,9 @@ def reset_bot():
 # Display settings sidebar
 with st.sidebar:
     with st.form("settings"):
-        bot_character = st.text_area("รายละเอียดของบอทว่าควรเป็นอย่างไร เช่น อาชีพ, นิสัย",
-                                     key="bot_character")
+        st.text_input("ชื่อของบอท", key="bot_name")
+        st.text_area("รายละเอียดของบอทว่าควรเป็นอย่างไร เช่น อาชีพ, นิสัย",
+                     key="bot_character")
         st.form_submit_button("บันทึก", on_click=reset_bot)
 
 
@@ -59,6 +60,8 @@ if prompt := st.chat_input("What is up?"):
         chat_kwargs = {'msg': prompt, 'session_id': st.session_state.session_id}
         if st.session_state.bot_character:
             chat_kwargs['characteristic'] = st.session_state.bot_character
+        if st.session_state.bot_name:
+            chat_kwargs['name'] = st.session_state.bot_name
         resp_stream = chatbot.chat(**chat_kwargs)
         response = st.write_stream(map(lambda ret: ret.content, resp_stream))
     # Add assistant response to chat history
