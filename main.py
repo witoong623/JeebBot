@@ -1,4 +1,5 @@
 import sys
+import uuid
 
 import streamlit as st
 
@@ -23,6 +24,8 @@ st.title("จีบบอท ❤️")
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if 'session_id' not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -30,15 +33,17 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 
+def reset_bot():
+    st.session_state.messages = []
+    st.session_state.session_id = str(uuid.uuid4())
+
+
 # Display settings sidebar
 with st.sidebar:
     with st.form("settings"):
         bot_character = st.text_area("รายละเอียดของบอทว่าควรเป็นอย่างไร เช่น อาชีพ, นิสัย",
                                      key="bot_character")
-        save_setting = st.form_submit_button("บันทึก")
-
-    if save_setting:
-        st.text(bot_character)
+        st.form_submit_button("บันทึก", on_click=reset_bot)
 
 
 # React to user input
@@ -51,6 +56,10 @@ if prompt := st.chat_input("What is up?"):
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        response = st.write_stream(map(lambda ret: ret.content, chatbot.chat(prompt)))
+        chat_kwargs = {'msg': prompt, 'session_id': st.session_state.session_id}
+        if st.session_state.bot_character:
+            chat_kwargs['characteristic'] = st.session_state.bot_character
+        resp_stream = chatbot.chat(**chat_kwargs)
+        response = st.write_stream(map(lambda ret: ret.content, resp_stream))
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})

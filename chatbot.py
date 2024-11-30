@@ -6,6 +6,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 
 from config import Config
+import templates
 
 
 class Chatbot:
@@ -26,16 +27,9 @@ class Chatbot:
         self.setup_chain()
 
     def setup_chain(self):
-        system_prompt = (
-            "คุณเป็นคนธรรมดาคนหนึ่งมีชื่อว่า ฝ้าย และเพศของคุณจะเป็นเพศตรงข้ามกับผู้สนทนาเสมอ "
-            "คุณสนทนาเพื่อหาเพื่อน หรือพัฒนาความสัมพันธ์ "
-            "กรุณาสทนา ตอบคำถาม ชวนสนทนาเรื่องต่างๆ หรือสอบถามข้อมูลต่างๆ โดยใช้ภาษาไทย "
-            "โดยใช้ภาษาไม่เป็นทางการ การสนทนาอาจจะถามคำถามต่อ หรือไม่ถามคำถามต่อก็ได้ "
-            "แต่ถ้าหากถูกถามชื่อ และยังไม่ทราบชื่อผู้สนทนา ควรถามชื่อกลับ "
-        )
         # This prompt include input, previous conversation history and input message.
         qa_prompt = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
+            ("system", templates.DEFAULT_SYSTEM_PROMPT),
             MessagesPlaceholder(variable_name="messages"),
         ])
 
@@ -52,8 +46,9 @@ class Chatbot:
             self.store[session_id] = ChatMessageHistory()
         return self.store[session_id]
 
-    def chat(self, msg, session_id="123"):
+    def chat(self, msg, characteristic=templates.DEFAULT_BOT_CHARACTERISTICS, session_id="123"):
         return self.conversation_chain.stream(
-            {"messages": [HumanMessage(content=msg)]},
+            {"messages": [HumanMessage(content=msg)],
+             "character": characteristic},
             config={"configurable": {"session_id": session_id}}
         )
