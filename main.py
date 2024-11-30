@@ -29,6 +29,18 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
+# Display settings sidebar
+with st.sidebar:
+    with st.form("settings"):
+        bot_character = st.text_area("รายละเอียดของบอทว่าควรเป็นอย่างไร เช่น อาชีพ, นิสัย",
+                                     key="bot_character")
+        save_setting = st.form_submit_button("บันทึก")
+
+    if save_setting:
+        st.text(bot_character)
+
+
 # React to user input
 if prompt := st.chat_input("What is up?"):
     # Display user message in chat message container
