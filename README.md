@@ -6,25 +6,25 @@ JeebBot is an AI-powered conversational agent designed to simulate dating conver
 
 The following features are being developed for JeebBot. Check them off as they are completed:
 
-- [ ] **Basic Conversation**  
+- [x] **Basic Conversation**
   Simple and engaging conversational abilities for general communication.
 
-- [ ] **Adjustable Tone**  
-  Allows users to set the tone of the conversation (e.g., formal, casual, romantic).
+- [x] **Adjustable Characteristic**
+  Allows users to specify name and characteristic of the bot.
 
-- [ ] **Memory Building**  
+- [ ] **Memory Building**
   Builds and retains knowledge about the "other person" during conversations.
 
-- [ ] **Knowledge Retrieval During Conversations**  
+- [ ] **Knowledge Retrieval During Conversations**
   Uses stored knowledge to make contextually relevant responses.
 
-- [ ] **Conversation Initiation and Conclusion**  
+- [ ] **Conversation Initiation and Conclusion**
   Initiates conversations at appropriate times and knows when to conclude them.
 
-- [ ] **Web Information Retrieval**  
+- [ ] **Web Information Retrieval**
   Searches for relevant real-time information from external sources (e.g., Wikipedia).
 
-- [ ] **Streamlit UI**  
+- [ ] **Streamlit UI**
   Provides an intuitive chat interface with messaging and tone selection capabilities.
 
 ---

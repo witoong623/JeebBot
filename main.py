@@ -42,7 +42,7 @@ def reset_bot():
 with st.sidebar:
     with st.form("settings"):
         st.text_input("ชื่อของบอท", key="bot_name")
-        st.text_area("รายละเอียดของบอทว่าควรเป็นอย่างไร เช่น อาชีพ, นิสัย",
+        st.text_area("รายละเอียดของบอทว่าควรเป็นอย่างไร เช่น อาชีพ, บุคลิกภาพ, นิสัย",
                      key="bot_character")
         st.form_submit_button("บันทึก", on_click=reset_bot)
 
