@@ -5,8 +5,9 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 
-from config import Config
 import templates as tp
+from config import Config
+from history_utils import UTF8MessageConverter
 
 
 class Chatbot:
@@ -48,7 +49,8 @@ class Chatbot:
     def get_session_history(self, session_id: str) -> BaseChatMessageHistory:
         # history contains HumanMessage and AIMessage but not SystemMessage, is it by design?
         return SQLChatMessageHistory(
-            session_id=session_id, connection="sqlite:///chat_history.db"
+            session_id=session_id, connection="sqlite:///chat_history.db",
+            custom_message_converter=UTF8MessageConverter('message_store')
         )
 
     def clear_session_history(self, session_id: str):
