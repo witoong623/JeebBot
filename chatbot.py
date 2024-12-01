@@ -1,5 +1,5 @@
 from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
@@ -24,6 +24,7 @@ class Chatbot:
             chat_kwargs['model'] = 'gpt-4o-mini'
         self.llm = ChatOpenAI(**chat_kwargs)
         self.store = {}
+        self.memory = {}
         self.setup_chain()
 
     def setup_chain(self):
@@ -34,22 +35,32 @@ class Chatbot:
         ])
 
         qa_chain = qa_prompt | self.llm
-
         self.conversation_chain = RunnableWithMessageHistory(
             qa_chain,
             self.get_session_history,
             input_messages_key="messages"
         )
 
+        summary_prompt = ChatPromptTemplate.from_template(tp.SUMMARY_PROMPT)
+        self.summary_chain = summary_prompt | self.llm
+
     def get_session_history(self, session_id: str) -> BaseChatMessageHistory:
         if session_id not in self.store:
             self.store[session_id] = ChatMessageHistory()
+        # history contains HumanMessage and AIMessage but not SystemMessage, is it by design?
         return self.store[session_id]
+
+    def update_memory(self, session_id="123"):
+        history = self.get_session_history(session_id)
+        messages = history.messages
+        formatted_messages = "\n".join([f"AI: {m.content}" if isinstance(m, AIMessage) else f"User: {m.content}"
+                                        for m in messages])
+        summary = self.summary_chain.invoke({'messages': formatted_messages})
+        self.memory[session_id] = summary
 
     def chat(self, msg, session_id="123",
              name=tp.DEFAULT_BOT_NAME,
-             characteristic=tp.DEFAULT_BOT_CHARACTERISTICS,
-             ):
+             characteristic=tp.DEFAULT_BOT_CHARACTERISTICS):
         return self.conversation_chain.stream(
             {"messages": [HumanMessage(content=msg)],
              "name": name,
