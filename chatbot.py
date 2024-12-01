@@ -1,4 +1,4 @@
-from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_community.chat_message_histories import SQLChatMessageHistory
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -28,15 +28,16 @@ class Chatbot:
         self.setup_chain()
 
     def setup_chain(self):
-        # This prompt include input, previous conversation history and input message.
-        qa_prompt = ChatPromptTemplate.from_messages([
+        # TODO: system prompt needs to be changed to match what user set in the settings (bot_name, bot_character)
+        # when user continue to chat next time, probably need to be done through streamlit session state
+        conversation_prompt = ChatPromptTemplate.from_messages([
             ("system", tp.DEFAULT_SYSTEM_PROMPT),
             MessagesPlaceholder(variable_name="messages"),
         ])
 
-        qa_chain = qa_prompt | self.llm
+        conversation_chain = conversation_prompt | self.llm
         self.conversation_chain = RunnableWithMessageHistory(
-            qa_chain,
+            conversation_chain,
             self.get_session_history,
             input_messages_key="messages"
         )
@@ -45,10 +46,14 @@ class Chatbot:
         self.summary_chain = summary_prompt | self.llm
 
     def get_session_history(self, session_id: str) -> BaseChatMessageHistory:
-        if session_id not in self.store:
-            self.store[session_id] = ChatMessageHistory()
         # history contains HumanMessage and AIMessage but not SystemMessage, is it by design?
-        return self.store[session_id]
+        return SQLChatMessageHistory(
+            session_id=session_id, connection="sqlite:///chat_history.db"
+        )
+
+    def clear_session_history(self, session_id: str):
+        history = self.get_session_history(session_id)
+        history.clear()
 
     def update_memory(self, session_id="123"):
         history = self.get_session_history(session_id)
