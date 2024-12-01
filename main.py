@@ -1,5 +1,6 @@
+import json
+import os
 import sys
-import uuid
 
 import streamlit as st
 
@@ -7,6 +8,7 @@ from config import Config
 from chatbot import Chatbot
 
 
+DEFAULT_STATE_FILE = 'settings_store.json'
 st.set_page_config(page_title="จีบบอท", page_icon="❤️")
 
 
@@ -17,16 +19,37 @@ def get_chatbot():
     return Chatbot(Config(sys.argv[1]))
 
 
+def save_session_state(session_keys: list[str], file_path=DEFAULT_STATE_FILE):
+    ''' Save session state to file. Primarily used to save user configuration settings. '''
+    state = {k: st.session_state[k] for k in session_keys}
+    with open(file_path, 'w') as f:
+        json.dump(state, f, ensure_ascii=False)
+
+
+def get_session_state(key: str, file_path=DEFAULT_STATE_FILE):
+    if not os.path.exists(file_path):
+        return None
+
+    with open(file_path, 'r') as f:
+        json_obj = json.load(f)
+        return json_obj.get(key)
+
+
 chatbot = get_chatbot()
 
 st.title("จีบบอท ❤️")
 
-# Initialize chat history
+# initialize session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if 'session_id' not in st.session_state:
     # temporary make it one session mode
     st.session_state.session_id = '00000000-0000-0000-0000-000000000000'
+if 'bot_name' not in st.session_state:
+    st.session_state.bot_name = get_session_state('bot_name')
+if 'bot_character' not in st.session_state:
+    st.session_state.bot_character = get_session_state('bot_character')
+
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -34,11 +57,13 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 
-def reset_bot():
+def on_setting_save():
     st.session_state.messages = []
     # temporary make it one session mode, so don't create new session
     # however, once implement multi-session, reset_bot bot create new session or delete message history?
     chatbot.clear_session_history(st.session_state.session_id)
+
+    save_session_state(['bot_name', 'bot_character'])
 
 
 # Display settings sidebar
@@ -47,7 +72,7 @@ with st.sidebar:
         st.text_input("ชื่อของบอท", key="bot_name")
         st.text_area("รายละเอียดของบอทว่าควรเป็นอย่างไร เช่น อาชีพ, บุคลิกภาพ, นิสัย",
                      key="bot_character")
-        st.form_submit_button("บันทึก", on_click=reset_bot)
+        st.form_submit_button("บันทึก", on_click=on_setting_save)
 
 
 # React to user input

@@ -3,3 +3,4 @@ __pycache__/
 !requirements.txt
 models/*.gguf
 *.db
+settings_store.json
