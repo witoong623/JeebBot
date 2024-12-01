@@ -52,12 +52,13 @@ if 'bot_character' not in st.session_state:
 
 
 # Display chat messages from history on app rerun
+# TODO: save chat history to use across sessions
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
 
-def on_setting_save():
+def on_save_setting():
     st.session_state.messages = []
     # temporary make it one session mode, so don't create new session
     # however, once implement multi-session, reset_bot bot create new session or delete message history?
@@ -66,13 +67,30 @@ def on_setting_save():
     save_session_state(['bot_name', 'bot_character'])
 
 
+def on_delete_history_data():
+    st.session_state.messages = []
+    st.session_state.bot_name = None
+    st.session_state.bot_character = None
+    chatbot.clear_session_history(st.session_state.session_id)
+
+    save_session_state(['bot_name', 'bot_character'])
+
+
 # Display settings sidebar
 with st.sidebar:
+    st.header("ตั้งค่า")
+
     with st.form("settings"):
         st.text_input("ชื่อของบอท", key="bot_name")
         st.text_area("รายละเอียดของบอทว่าควรเป็นอย่างไร เช่น อาชีพ, บุคลิกภาพ, นิสัย",
                      key="bot_character")
-        st.form_submit_button("บันทึก", on_click=on_setting_save)
+        st.form_submit_button("บันทึก", on_click=on_save_setting)
+
+    st.divider()
+
+    st.subheader("ลบข้อมูล")
+    st.markdown("ลบการตั้งค่า, ข้อความที่สนทนา และความจำทั้งหมด")
+    st.button("ลบข้อมูล", 'delete_history_data_button', on_click=on_delete_history_data)
 
 
 # React to user input
