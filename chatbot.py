@@ -55,7 +55,7 @@ class Chatbot:
         history = self.get_session_history(session_id)
         history.clear()
 
-    def update_memory(self, session_id="123"):
+    def update_memory(self, session_id):
         history = self.get_session_history(session_id)
         messages = history.messages
         formatted_messages = "\n".join([f"AI: {m.content}" if isinstance(m, AIMessage) else f"User: {m.content}"
@@ -63,7 +63,7 @@ class Chatbot:
         summary = self.summary_chain.invoke({'messages': formatted_messages})
         self.memory[session_id] = summary
 
-    def chat(self, msg, session_id="123",
+    def chat(self, msg, session_id,
              name=tp.DEFAULT_BOT_NAME,
              characteristic=tp.DEFAULT_BOT_CHARACTERISTICS):
         return self.conversation_chain.stream(

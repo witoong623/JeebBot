@@ -25,7 +25,8 @@ st.title("จีบบอท ❤️")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if 'session_id' not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())
+    # temporary make it one session mode
+    st.session_state.session_id = '00000000-0000-0000-0000-000000000000'
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
@@ -35,7 +36,9 @@ for message in st.session_state.messages:
 
 def reset_bot():
     st.session_state.messages = []
-    st.session_state.session_id = str(uuid.uuid4())
+    # temporary make it one session mode, so don't create new session
+    # however, once implement multi-session, reset_bot bot create new session or delete message history?
+    chatbot.clear_session_history(st.session_state.session_id)
 
 
 # Display settings sidebar
