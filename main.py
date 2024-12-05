@@ -76,6 +76,10 @@ def on_delete_history_data():
     save_session_state(['bot_name', 'bot_character'])
 
 
+def on_save_memory():
+    chatbot.update_memory(st.session_state.session_id)
+    
+
 # Display settings sidebar
 with st.sidebar:
     st.header("ตั้งค่า")
@@ -88,13 +92,19 @@ with st.sidebar:
 
     st.divider()
 
+    st.subheader("ความจำ")
+    st.markdown("บันทึกประวัติการสนทนาที่ผ่านมาเป็นความจำของบอท")
+    st.button("บันทึก", 'save_memory_button', on_click=on_save_memory)
+
+    st.divider()
+
     st.subheader("ลบข้อมูล")
     st.markdown("ลบการตั้งค่า, ข้อความที่สนทนา และความจำทั้งหมด")
     st.button("ลบข้อมูล", 'delete_history_data_button', on_click=on_delete_history_data)
 
 
 # React to user input
-if prompt := st.chat_input("What is up?"):
+if prompt := st.chat_input("ข้อความ"):
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)

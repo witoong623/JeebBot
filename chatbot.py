@@ -60,17 +60,25 @@ class Chatbot:
     def update_memory(self, session_id):
         history = self.get_session_history(session_id)
         messages = history.messages
+        # TODO: Maybe it is better to use the name of bot instead of "AI" in the formatted_messages
         formatted_messages = "\n".join([f"AI: {m.content}" if isinstance(m, AIMessage) else f"User: {m.content}"
                                         for m in messages])
         summary = self.summary_chain.invoke({'messages': formatted_messages})
-        self.memory[session_id] = summary
+        self.memory[session_id] = summary.content
 
     def chat(self, msg, session_id,
              name=tp.DEFAULT_BOT_NAME,
              characteristic=tp.DEFAULT_BOT_CHARACTERISTICS):
+        if session_id in self.memory:
+            memory = self.memory[session_id]
+            memory_context = tp.MEMORY_CONTEXT_PROMPT.format(memory=memory)
+        else:
+            memory_context = ''
+
         return self.conversation_chain.stream(
             {"messages": [HumanMessage(content=msg)],
              "name": name,
-             "character": characteristic},
-            config={"configurable": {"session_id": session_id}}
+             "character": characteristic,
+             'memory_context': memory_context},
+             config={"configurable": {"session_id": session_id}}
         )
