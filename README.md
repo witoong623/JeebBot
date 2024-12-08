@@ -18,7 +18,7 @@ The following features are being developed for JeebBot. Check them off as they a
 - [x] **Adjustable Characteristic**
   Allows users to specify name and characteristic of the bot.
 
-- [ ] **Memory Building**
+- [x] **Memory Building**
   Builds and retains knowledge about the "other person" during conversations.
 
 - [ ] **Conversation Initiation and Conclusion**
@@ -75,7 +75,7 @@ JeebBot is currently under active development. Here's the roadmap:
 
 1. Complete the basic conversation feature. (DONE)
 2. Implement bot's characteristic adjustment. (DONE)
-3. Add memory capabilities to remember key facts. (WORKING ON)
+3. Add memory capabilities to remember key facts. (DONE)
 4. Inject context of conversation such as time, day.
 5. Tune prompt or implement time base to initiate conversation from bot first, and to stop when appropriate.
 6. Polish the UI for a seamless user experience.
