@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI
 import templates as tp
 from config import Config
 from history_utils import UTF8MessageConverter
+from memory import ChatMemory
 
 
 class Chatbot:
@@ -84,15 +85,17 @@ class Chatbot:
             summary_args['previous_summary_prompt'] = ''
 
         summary = self.summary_chain.invoke(summary_args)
-        self.memory[session_id] = summary.content
+
+        memory = ChatMemory(session_id, "sqlite:///chat_memory.db")
+        memory.update_memory(summary.content)
 
     def chat(self, msg, session_id,
              name=tp.DEFAULT_BOT_NAME,
              characteristic=tp.DEFAULT_BOT_CHARACTERISTICS):
         # get memory context and add it to the conversation
-        if session_id in self.memory:
-            memory = self.memory[session_id]
-            memory_context = tp.MEMORY_CONTEXT_PROMPT.format(memory=memory)
+        chat_memory = ChatMemory(session_id, "sqlite:///chat_memory.db")
+        if (chat_memory_content := chat_memory.content):
+            memory_context = tp.MEMORY_CONTEXT_PROMPT.format(memory=chat_memory_content)
         else:
             memory_context = ''
 

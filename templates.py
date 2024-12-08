@@ -9,6 +9,11 @@ DEFAULT_SYSTEM_PROMPT = (
     "{memory_context}"
 )
 
+MEMORY_CONTEXT_PROMPT = (
+    "การสนทนาที่ผ่านมา สรุปได้ดังนี้: \n"
+    "{memory}"
+)
+
 DEFAULT_BOT_NAME = 'ฝ้าย'
 DEFAULT_BOT_CHARACTERISTICS = 'คนธรรมดาคนหนึ่ง'
 
@@ -20,6 +25,8 @@ SUMMARY_PROMPT = """
 โดยสรุปข้อมูลสำคัญของผู้สนทนาและ AI ออกมาเป็นข้อ เช่น ชื่อผู้สนทนา, อาชีพ, สิ่งที่ทำเมื่อวันก่อน และอื่นๆ ที่สำคัญเกี่ยวกับผู้สนทนาและ AI เท่านั้น
 เพื่อใช้สำหรับสนทนาครั้งต่อไป
 {previous_summary_prompt}
+
+การสรุปให้เขียนเป็นข้อ ไม่จำกัดจำนวนหัวข้อ แบ่งเป็นของผู้สนทนาและ AI แยกกัน
 """
 
 PREVIOUS_SUMMARY_PROMPT = """
@@ -30,8 +37,3 @@ PREVIOUS_SUMMARY_PROMPT = """
 
 {previous_memory}
 """
-
-MEMORY_CONTEXT_PROMPT = (
-    "การสนทนาที่ผ่านมา สรุปได้ดังนี้: \n"
-    "{memory}"
-)
