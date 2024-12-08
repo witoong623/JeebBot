@@ -1,5 +1,5 @@
 from langchain_community.chat_message_histories import SQLChatMessageHistory
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage, trim_messages
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
@@ -29,6 +29,12 @@ class Chatbot:
         self.setup_chain()
 
     def setup_chain(self):
+        self.trimmer = trim_messages(
+            max_tokens=2000,
+            strategy='last',
+            token_counter=self.llm,
+            include_system=True,
+        )
         # TODO: system prompt needs to be changed to match what user set in the settings (bot_name, bot_character)
         # when user continue to chat next time, probably need to be done through streamlit session state
         conversation_prompt = ChatPromptTemplate.from_messages([
@@ -36,15 +42,16 @@ class Chatbot:
             MessagesPlaceholder(variable_name="messages"),
         ])
 
-        conversation_chain = conversation_prompt | self.llm
+        conversation_chain = conversation_prompt | self.trimmer | self.llm
         self.conversation_chain = RunnableWithMessageHistory(
             conversation_chain,
             self.get_session_history,
             input_messages_key="messages"
         )
 
+        # TODO: summary chain should add new summary to existing memory instead of replacing it
         summary_prompt = ChatPromptTemplate.from_template(tp.SUMMARY_PROMPT)
-        self.summary_chain = summary_prompt | self.llm
+        self.summary_chain = summary_prompt | self.trimmer | self.llm
 
     def get_session_history(self, session_id: str) -> BaseChatMessageHistory:
         # history contains HumanMessage and AIMessage but not SystemMessage, is it by design?
@@ -69,6 +76,7 @@ class Chatbot:
     def chat(self, msg, session_id,
              name=tp.DEFAULT_BOT_NAME,
              characteristic=tp.DEFAULT_BOT_CHARACTERISTICS):
+        # get memory context and add it to the conversation
         if session_id in self.memory:
             memory = self.memory[session_id]
             memory_context = tp.MEMORY_CONTEXT_PROMPT.format(memory=memory)
