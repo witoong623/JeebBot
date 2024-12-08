@@ -23,7 +23,8 @@ class Chatbot:
         else:
             # it is OpenAI API, select model
             chat_kwargs['model'] = 'gpt-4o-mini'
-        self.llm = ChatOpenAI(**chat_kwargs)
+        self.conversation_llm = ChatOpenAI(**chat_kwargs)
+        self.summary_llm = ChatOpenAI(temperature=0.0, **chat_kwargs)
         self.store = {}
         self.memory = {}
         self.setup_chain()
@@ -32,7 +33,9 @@ class Chatbot:
         self.trimmer = trim_messages(
             max_tokens=2000,
             strategy='last',
-            token_counter=self.llm,
+            # we use the same LLM class for both conversation and summary
+            # so we can use either of them to count tokens
+            token_counter=self.conversation_llm,
             include_system=True,
         )
         # TODO: system prompt needs to be changed to match what user set in the settings (bot_name, bot_character)
@@ -42,16 +45,15 @@ class Chatbot:
             MessagesPlaceholder(variable_name="messages"),
         ])
 
-        conversation_chain = conversation_prompt | self.trimmer | self.llm
+        conversation_chain = conversation_prompt | self.trimmer | self.conversation_llm
         self.conversation_chain = RunnableWithMessageHistory(
             conversation_chain,
             self.get_session_history,
             input_messages_key="messages"
         )
 
-        # TODO: summary chain should add new summary to existing memory instead of replacing it
         summary_prompt = ChatPromptTemplate.from_template(tp.SUMMARY_PROMPT)
-        self.summary_chain = summary_prompt | self.trimmer | self.llm
+        self.summary_chain = summary_prompt | self.trimmer | self.summary_llm
 
     def get_session_history(self, session_id: str) -> BaseChatMessageHistory:
         # history contains HumanMessage and AIMessage but not SystemMessage, is it by design?
@@ -70,7 +72,18 @@ class Chatbot:
         # TODO: Maybe it is better to use the name of bot instead of "AI" in the formatted_messages
         formatted_messages = "\n".join([f"AI: {m.content}" if isinstance(m, AIMessage) else f"User: {m.content}"
                                         for m in messages])
-        summary = self.summary_chain.invoke({'messages': formatted_messages})
+        summary_args = {
+            'messages': formatted_messages
+        }
+
+        # get previous memory to be initial memory context
+        if session_id in self.memory:
+            previous_summary_prompt = tp.MEMORY_CONTEXT_PROMPT.format(previous_memory=self.memory[session_id])
+            summary_args['previous_summary_prompt'] = previous_summary_prompt
+        else:
+            summary_args['previous_summary_prompt'] = ''
+
+        summary = self.summary_chain.invoke(summary_args)
         self.memory[session_id] = summary.content
 
     def chat(self, msg, session_id,
