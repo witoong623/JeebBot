@@ -15,9 +15,11 @@ services:
       - "-n"
       - "1024"
       - "--n-gpu-layers"
-      - "12"
+      - "29"
       - "--threads"
       - "6"
+    ports:
+      - "8000:8000"
     deploy:
       resources:
         reservations:
