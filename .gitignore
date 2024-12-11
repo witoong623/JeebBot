@@ -4,3 +4,4 @@ __pycache__/
 models/*.gguf
 *.db
 settings_store.json
+local-llm-model/*.gguf
