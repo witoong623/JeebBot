@@ -15,7 +15,7 @@ services:
       - "-n"
       - "1024"
       - "--n-gpu-layers"
-      - "29"
+      - "49"
       - "--threads"
       - "6"
     ports:

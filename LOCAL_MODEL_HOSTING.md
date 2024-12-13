@@ -29,11 +29,15 @@ You can read about options to control the server in [llama-cli](https://github.c
 Then edit docker compose file at `docker/docker-compose.llama-cpp.yaml`, and change `command` to adjust the options.
 
 ## Model Quality Comparison
-This is description of the feeling after trying the model in Thai language.  
+This is description of the feeling after trying the model in Thai language. It isn't scientifically compare!.
 Normally, I use GPT-4o-mini which feel very natural to have conversation and follow instruction correctly.  
 Though, it does have ability to answer in very useful manner, which not many people do it in dating conversation.
 
-| Model                                    | Quality                                                                                              |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| 1. llama-3-typhoon-v1.5-8b-instruct.Q6_K | Conversation feel very unnatural. It generate unrelated output when asking to summarize conversation |
-| 2. openthaigpt1.5-7B-instruct-Q4KM       | Conversation feel a little bit more natural than 1. Follow request but later abandon it              |
+| Model                                     | Quality                                                                                              |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 1. llama-3-typhoon-v1.5-8b-instruct.Q6_K  | Conversation feel very unnatural. It generate unrelated output when asking to summarize conversation |
+| 2. openthaigpt1.5-7b-instruct.Q6_K        | Conversation feel a little bit more natural than 1. But it confuse itself with user                  |
+| 3. llama-3-typhoon-v1.5x-8b-instruct-Q6_K | Conversation feel a lot more natural than 1. Doesn't always follow system message                    |
+| 4. **openthaigpt1.5-14b-instruct.Q6_K**   | Far better in every aspect than above models for obvious reason!                                     |
+
+Generally speaking, a bigger model with enough bpw quantize should be better.
