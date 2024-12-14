@@ -39,11 +39,11 @@ JeebBot is built using the following technologies:
 - **LangChain**: For constructing and managing the conversational agent.
 - **OpenAI API**: Language model powering the conversation.
 - **Streamlit**: For creating a user-friendly web-based interface.
+- **llama.cpp**: For hosting local LLM.
 
 ---
 
 ## Installation and Setup
-
 Follow these steps to set up and run JeebBot locally:
 
 1. **Clone the repository**:
@@ -67,6 +67,30 @@ Follow these steps to set up and run JeebBot locally:
 
 5. Open your browser and navigate to `http://localhost:8501` to start using JeebBot.
 
+### Running JeebBot in Docker
+Follow these steps to set up and run JeebBot locally:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/witoong623/JeebBot.git
+   cd jeebbot
+   ```
+
+2. **Build the Docker image**:
+   ```bash
+   ./scripts/build-prod-image.sh
+   ```
+
+3. **Run the Docker Compose**:
+   ```bash
+   docker compose -f docker/docker-compose.yaml up -d
+   ```
+
+4. Open your browser and navigate to `http://localhost:8501` to start using JeebBot.
+
+## Running local LLM
+Please read [LOCAL_MODEL_HOSTING.md](LOCAL_MODEL_HOSTING.md) for more detail.
+
 ---
 
 ## Roadmap
@@ -76,6 +100,7 @@ JeebBot is currently under active development. Here's the roadmap:
 1. Complete the basic conversation feature. (DONE)
 2. Implement bot's characteristic adjustment. (DONE)
 3. Add memory capabilities to remember key facts. (DONE)
+    1. Make the bot remember key facts automatically.
 4. Inject context of conversation such as time, day.
 5. Tune prompt or implement time base to initiate conversation from bot first, and to stop when appropriate.
 6. Polish the UI for a seamless user experience.

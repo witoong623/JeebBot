@@ -2,6 +2,9 @@
 This is document about hosting LLM server that offer OpenAI compatible API and config the app to use it.
 
 ## App configuration
+Edit `config.yaml` as follow
+- Change `openai_api_key` to `no-key` (actually, it can be any string)
+- Change `openai_compatible_base_url` to `http://llama-cpp-server:8000`.
 
 ## llama.cpp
 ### Building llama-server docker image

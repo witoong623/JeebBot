@@ -3,3 +3,7 @@ models/
 example-document.txt/
 scripts/
 config.yaml
+local-llm-model/
+*.db
+settings_store.json
+.env
